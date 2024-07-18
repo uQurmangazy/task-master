@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
+use App\Http\Resources\TaskResource;
 use App\Models\Status;
 use App\Models\Task;
 use Illuminate\Http\JsonResponse;
@@ -25,7 +26,7 @@ class TaskController extends Controller
             ->filter($request->all())
             ->paginate($perPage);
 
-        return response()->json($tasks);
+        return response()->json(TaskResource::collection($tasks));
     }
 
     /**
@@ -37,62 +38,42 @@ class TaskController extends Controller
     public function store(StoreTaskRequest $request): JsonResponse
     {
         $task = Task::create($request->validated());
-        return response()->json($task, 201);
+        return response()->json(new TaskResource($task), 201);
     }
 
     /**
      * Display the specified task.
      *
-     * @param string $id
-     * @return JsonResponse
+     * @param Task $task
+     * @return TaskResource
      */
-    public function show(string $id): JsonResponse
+    public function show(Task $task): TaskResource
     {
-        $task = Task::find($id);
-
-        if (!$task) {
-            return response()->json(['error' => 'Task not found'], 404);
-        }
-
-        return response()->json($task);
+        return new TaskResource($task);
     }
 
     /**
      * Update the specified task in storage.
      *
      * @param UpdateTaskRequest $request
-     * @param string $id
-     * @return JsonResponse
+     * @param Task $task
+     * @return TaskResource
      */
-    public function update(UpdateTaskRequest $request, string $id)
+    public function update(UpdateTaskRequest $request, Task $task): TaskResource
     {
-        $task = Task::find($id);
-
-        if (!$task) {
-            return response()->json(['error' => 'Task not found'], 404);
-        }
-
         $task->update($request->validated());
-
-        return response()->json($task);
+        return new TaskResource($task);
     }
 
     /**
      * Remove the specified task from storage.
      *
-     * @param string $id
+     * @param Task $task
      * @return JsonResponse
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(Task $task): JsonResponse
     {
-        $task = Task::find($id);
-
-        if (!$task) {
-            return response()->json(['error' => 'Task not found'], 404);
-        }
-
         $task->delete();
-
         return response()->json(null, 204);
     }
 }
