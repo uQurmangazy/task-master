@@ -25,7 +25,7 @@ class TaskController extends Controller
             ->filter($request->all())
             ->paginate($perPage);
 
-        return response()->json(TaskResource::collection($tasks));
+        return response()->json($tasks);
     }
 
     /**
