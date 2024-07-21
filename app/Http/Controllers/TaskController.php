@@ -8,6 +8,8 @@ use App\Http\Resources\TaskResource;
 use App\Models\Task;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Response;
 
 class TaskController extends Controller
 {
@@ -15,9 +17,9 @@ class TaskController extends Controller
      * Display a listing of the tasks.
      *
      * @param Request $request
-     * @return JsonResponse
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): AnonymousResourceCollection
     {
         $perPage = $request->input('per_page', 10);
 
@@ -25,7 +27,7 @@ class TaskController extends Controller
             ->filter($request->all())
             ->paginate($perPage);
 
-        return response()->json($tasks);
+        return TaskResource::collection($tasks);
     }
 
     /**
@@ -37,7 +39,7 @@ class TaskController extends Controller
     public function store(StoreTaskRequest $request): JsonResponse
     {
         $task = Task::create($request->validated());
-        return response()->json(new TaskResource($task), 201);
+        return (new TaskResource($task))->response()->setStatusCode(201);
     }
 
     /**
@@ -73,6 +75,6 @@ class TaskController extends Controller
     public function destroy(Task $task): JsonResponse
     {
         $task->delete();
-        return response()->json(null, 204);
+        return response()->json()->setStatusCode(204);
     }
 }

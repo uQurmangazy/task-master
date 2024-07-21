@@ -32,19 +32,4 @@ class StoreTaskRequest extends FormRequest
             ]
         ];
     }
-
-    public function messages() : array
-    {
-        return [
-            'title.required' => 'The title field is required.',
-            'title.string' => 'The title must be a string.',
-            'title.max' => 'The title may not be greater than 255 characters.',
-            'description.string' => 'The description must be a string.',
-            'status_id.required' => 'The status field is required.',
-            'status_id.exists' => 'The selected status is invalid.',
-            'due_date.required' => 'The due date field is required.',
-            'due_date.date' => 'The due date is not a valid date.',
-            'due_date.after_or_equal' => 'The due date cannot be in the past.'
-        ];
-    }
 }
